@@ -1,0 +1,9 @@
+---
+# tasks file for ec2-instance
+- import_tasks: keypair.yml
+- import_tasks: net-info.yml
+- import_tasks: sec-group.yml
+- import_tasks: ec2-instance.yml
+- meta: refresh_inventory
+- pause:
+    seconds: 30

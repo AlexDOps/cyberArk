@@ -1,0 +1,6 @@
+---
+# Create jumpbox on an EC2 instance
+- hosts: localhost
+  gather_facts: False
+  roles:
+    - role: ec2-instance
