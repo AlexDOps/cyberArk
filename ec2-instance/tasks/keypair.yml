@@ -3,9 +3,19 @@
   ec2_key:
     name: "{{ key_name }}"
     region: "{{ region_name }}"
-    # key_material: "{{ lookup('file', '~/keypair/chawler.pub') }}"
   register: ec2_key
 
+- name: Print private key
+  debug:
+    var: ec2_key
+
+- name: Creates private key directory
+  file:
+    path: .key/
+    state: directory
+  become: true
+
 - name: Save private key
-  copy: content="{{ ec2_key.key.private_key }}" dest="./{{ key_name }}.pem" mode=0600
+  copy: content="{{ ec2_key.key.private_key }}" dest=".key/{{ key_name }}.pem" mode=0600
   when: ec2_key.changed
+  become: true

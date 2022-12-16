@@ -1,17 +1,28 @@
 ---
 - name: Create EC2 instances
-  amazon.aws.ec2_instance:
+  ec2:
     key_name: "{{ key_name }}"
-    region: "{{ region_name }}"
+    image:  "{{ image_id }}"
     instance_type: "{{ instance_type }}"
-    image_id: "{{ image_id }}"
+    region: "{{ region_name }}"
+    user_data: "{{ lookup('file', '~/files/apache.sh') }}"
     vpc_subnet_id: "{{ random_subnet }}"
-    security_group: "{{ instance_name }}-sg"
+    group: "{{ instance_name }}-sg"
     wait: yes
-    tags:
-      Name: jumpbox
+    instance_tags:
+      Name: apachebox
       EnvName: Test Environment
     exact_count: 1
-    network:
-       assign_public_ip: true
+    count_tag:
+      Name: apachebox
+    assign_public_ip: true
   register: ec2
+
+
+- name: Add the newly created EC2 instance(s) to the local host group
+  local_action: lineinfile
+                path="hosts"
+                regexp={{ item.public_ip }}
+                insertafter="[apachebox]" line="{{ item.public_ip }} ansible_user=ec2-user ansible_ssh_private_key_file=.key/{{ key_name }}.pem ansible_ssh_extra_args='-o StrictHostKeyChecking=no'"
+  with_items: "{{ ec2.instances }}"
+  become: true

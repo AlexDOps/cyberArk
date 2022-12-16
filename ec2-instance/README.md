@@ -1,38 +1,60 @@
 Role Name
 =========
-
-A brief description of the role goes here.
+Role name: ec2-instance
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Instance that will be used to run this playbook requires;
+
+- Ansible
+- awscli
+- python 
+- pip
+- boto, boto3
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Variable values referenced in the main tasks can be found in /etc/ansible/roles/ec2-instance/vars/main.yml
 
-Dependencies
-------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+How the Playbook works
+-----------------------
 
-Example Playbook
-----------------
+The ec2-instance ansible role created in this project will create a keypair, create an hidden folder in the /etc/ansible directory and save the created keypair in this format keypair.pem, create a security group with HTTP and SSH ports open to Johnson's public IP address on the ingress while HTTP and HTTPS ports are open to all traffic on the egress.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+The other tasks that will be executed include obtaining default VPC info, assigning a random public subnet to the ec2-instance, spinning up an instance on the configured AWS account and attached the already created security group to the instance and install/start apache web server on the instance using a bash script created in this project.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Note: Follow the following guide to run the playbook
 
-License
--------
 
-BSD
+- Before you run this playbook, kindly create a directory named "files" in home directory: sudo mkdir ~/files, then create a file named apache.sh inside the "files" directory that was previously created
 
-Author Information
-------------------
+- Edit the host inventory file and add a group named "[apachebox]" to the last line of the file; sudo vi /etc/ansible/hosts
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+- Create a run-setup.yml file in /etc/ansible directory and paste the following bash script: sudo vi /etc/ansible/run-setup.yml
+
+- run this command: sudo ansible-galaxy init roles/ec2-instance from the /etc/ansible directory to be able to generate a  template using ansible-galaxy. Override the files in tasks/, var/, meta/ directory as it apppears in this project
+
+#!/bin/bash
+sudo su
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+
+
+
+Best practices 
+---------------
+
+- private key was saved in an hidden folder
+- used variables within the files to provide code reuse
+- values were stored in var files so it could be easily referenced and not exposed in any part when running the code
+- AWS configure was used to configure the profile used to run the project to protect the access key and the secret key
+
+
+
+
+

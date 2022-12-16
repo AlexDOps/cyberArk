@@ -1,2 +1,5 @@
 ---
 # handlers file for ec2-instance
+
+- name: Start and Enable httpd service
+  service: name=httpd state=restarted enabled=yes

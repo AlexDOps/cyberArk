@@ -4,5 +4,6 @@ region_name: 'us-east-1'
 key_name: 'my_keypair'
 image_id: 'ami-0b0dcb5067f052a63' #Amazon Linux 2 AMI (HVM), SSD Volume Type, us-east-1
 instance_type: 't2.micro'
-instance_name: 'jumpbox'
-ipify_public_ip: '68.39.195.181'        #75.18.107.224'
+instance_name: 'apachebox'
+ipify_public_ip: '75.18.107.224'        
+
